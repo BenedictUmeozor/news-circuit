@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Container from '@/components/shared/Container.vue'
 import News from '@/components/shared/News.vue'
-import NewsPagination from '@/components/shared/NewsPagination.vue'
 import NewsSkeleton from '@/components/shared/NewsSkeleton.vue'
+import SearchPagination from '@/components/shared/SearchPagination.vue'
 import type { NewsResponse } from '@/interfaces'
 import { api } from '@/lib/axios'
 import { useQuery } from '@tanstack/vue-query'
-import { computed, useTemplateRef, watch } from 'vue'
+import { computed, onMounted, useTemplateRef, watch } from 'vue'
 
 const props = defineProps<{ page: string; query: string }>()
 
@@ -48,6 +48,10 @@ const showPagination = computed(() => {
   )
 })
 
+onMounted(() => {
+  div.value?.scrollIntoView({ behavior: 'smooth' })
+})
+
 watch(
   () => props.page,
   (newVal, oldVal) => {
@@ -81,11 +85,12 @@ watch(
     >
       <News v-for="news in allNews" :key="news.url" :news="news" />
     </Container>
-    <NewsPagination
+    <SearchPagination
       v-if="showPagination"
       :current-page="currentPage"
       :total-pages="totalPages"
       :last-page="lastPage"
+      :query="props.query"
     />
   </section>
 </template>

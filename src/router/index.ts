@@ -22,15 +22,15 @@ const router = createRouter({
       props: true,
     },
     {
-      path: '/category/:category/page/:page',
-      name: 'category-page',
-      component: () => import('../views/CategoryPageView.vue'),
-      props: true,
-    },
-    {
       path: '/search/:query',
       name: 'search',
       component: () => import('../views/SearchView.vue'),
+      props: true,
+    },
+    {
+      path: '/category/:category/page/:page',
+      name: 'category-page',
+      component: () => import('../views/CategoryPageView.vue'),
       props: true,
     },
     {

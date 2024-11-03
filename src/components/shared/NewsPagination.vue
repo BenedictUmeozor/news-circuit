@@ -10,7 +10,7 @@ import {
   PaginationPrev,
 } from '@/components/ui/pagination'
 import { Button } from '../ui/button'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,12 +18,24 @@ import {
   ChevronsRight,
 } from 'lucide-vue-next'
 import Container from './Container.vue'
+import { ref, watch } from 'vue'
+
+const route = useRoute()
+
+const routePage = ref<number | null>(Number(route.params.page) || null)
 
 const { currentPage, totalPages, lastPage } = defineProps<{
   currentPage: number
   totalPages: number
   lastPage: number
 }>()
+
+watch(
+  () => route.params.page,
+  value => {
+    routePage.value = Number(value)
+  },
+)
 </script>
 
 <template>
@@ -43,8 +55,11 @@ const { currentPage, totalPages, lastPage } = defineProps<{
         </PaginationFirst>
         <PaginationPrev>
           <RouterLink
-            :to="{ name: 'page', params: { page: currentPage - 1 } }"
-            v-if="currentPage > 1"
+            :to="{
+              name: 'page',
+              params: { page: (routePage || currentPage) - 1 },
+            }"
+            v-if="(routePage || currentPage) > 1"
           >
             <ChevronLeft class="w-4" />
           </RouterLink>

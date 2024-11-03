@@ -6,7 +6,7 @@ import NewsSkeleton from '@/components/shared/NewsSkeleton.vue'
 import type { NewsResponse } from '@/interfaces'
 import { api } from '@/lib/axios'
 import { useQuery } from '@tanstack/vue-query'
-import { computed, useTemplateRef, watch } from 'vue'
+import { computed, onMounted, useTemplateRef, watch } from 'vue'
 
 const props = defineProps<{ page: string }>()
 
@@ -46,6 +46,10 @@ const showPagination = computed(() => {
     !!currentPage.value &&
     !!lastPage.value
   )
+})
+
+onMounted(() => {
+  div.value?.scrollIntoView({ behavior: 'smooth' })
 })
 
 watch(
