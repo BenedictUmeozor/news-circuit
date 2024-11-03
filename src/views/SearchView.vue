@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CategoryPagination from '@/components/shared/CategoryPagination.vue'
+import SearchPagination from '@/components/shared/SearchPagination.vue'
 import Container from '@/components/shared/Container.vue'
 import News from '@/components/shared/News.vue'
 import NewsSkeleton from '@/components/shared/NewsSkeleton.vue'
@@ -8,13 +8,13 @@ import { api } from '@/lib/axios'
 import { useQuery } from '@tanstack/vue-query'
 import { computed, watch } from 'vue'
 
-const props = defineProps<{ category: string }>()
+const props = defineProps<{ query: string }>()
 
 const { data, isPending, isError, refetch } = useQuery({
-  queryKey: ['news', props.category],
+  queryKey: ['news', props.query],
   queryFn: async (): Promise<NewsResponse> => {
     const response = await api.get(
-      `/news?categories=${props.category}&languages=en&limit=25`,
+      `/news?keywords=${props.query}&languages=en&limit=25`,
     )
     return response.data
   },
@@ -45,7 +45,7 @@ const showPagination = computed(() => {
 })
 
 watch(
-  () => props.category,
+  () => props.query,
   (newVal, oldVal) => {
     if (typeof oldVal === 'undefined' || newVal !== oldVal) {
       refetch()
@@ -75,12 +75,12 @@ watch(
     >
       <News v-for="news in allNews" :key="news.url" :news="news" />
     </Container>
-    <CategoryPagination
+    <SearchPagination
       v-if="showPagination"
       :current-page="currentPage"
       :total-pages="totalPages"
       :last-page="lastPage"
-      :category="category"
+      :query="query"
     />
   </section>
 </template>

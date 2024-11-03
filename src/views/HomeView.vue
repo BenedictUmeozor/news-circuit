@@ -14,7 +14,7 @@ const { data, isPending, isError } = useQuery({
     const response = await api.get('/news?limit=25&languages=en')
     return response.data
   },
-  staleTime: 500,
+  staleTime: 1500,
   retry: 2,
 })
 

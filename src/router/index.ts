@@ -27,6 +27,18 @@ const router = createRouter({
       component: () => import('../views/CategoryPageView.vue'),
       props: true,
     },
+    {
+      path: '/search/:query',
+      name: 'search',
+      component: () => import('../views/SearchView.vue'),
+      props: true,
+    },
+    {
+      path: '/search/:query/page/:page',
+      name: 'search-page',
+      component: () => import('../views/SearchViewPage.vue'),
+      props: true,
+    },
   ],
 })
 

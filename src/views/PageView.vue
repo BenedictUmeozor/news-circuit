@@ -20,7 +20,7 @@ const { data, isPending, isError, refetch } = useQuery({
     )
     return response.data
   },
-  staleTime: 500,
+  staleTime: 1500,
   retry: 2,
 })
 

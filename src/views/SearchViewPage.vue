@@ -1,26 +1,30 @@
 <script setup lang="ts">
-import CategoryPagination from '@/components/shared/CategoryPagination.vue'
 import Container from '@/components/shared/Container.vue'
 import News from '@/components/shared/News.vue'
+import NewsPagination from '@/components/shared/NewsPagination.vue'
 import NewsSkeleton from '@/components/shared/NewsSkeleton.vue'
 import type { NewsResponse } from '@/interfaces'
 import { api } from '@/lib/axios'
 import { useQuery } from '@tanstack/vue-query'
-import { computed, watch } from 'vue'
+import { computed, useTemplateRef, watch } from 'vue'
 
-const props = defineProps<{ category: string }>()
+const props = defineProps<{ page: string; query: string }>()
+
+const offsetValue = computed(() => (Number(props.page) - 1) * 25)
 
 const { data, isPending, isError, refetch } = useQuery({
-  queryKey: ['news', props.category],
+  queryKey: ['news', Number(props.page)],
   queryFn: async (): Promise<NewsResponse> => {
     const response = await api.get(
-      `/news?categories=${props.category}&languages=en&limit=25`,
+      `/news?limit=25&languages=en&offset=${offsetValue.value}&query=${props.query}`,
     )
     return response.data
   },
   staleTime: 1500,
   retry: 2,
 })
+
+const div = useTemplateRef('scroll-div')
 
 const allNews = computed(() => data.value?.data ?? [])
 const totalPages = computed(() => {
@@ -45,10 +49,11 @@ const showPagination = computed(() => {
 })
 
 watch(
-  () => props.category,
+  () => props.page,
   (newVal, oldVal) => {
     if (typeof oldVal === 'undefined' || newVal !== oldVal) {
       refetch()
+      div.value?.scrollIntoView({ behavior: 'smooth' })
     }
   },
   { immediate: true },
@@ -56,6 +61,7 @@ watch(
 </script>
 
 <template>
+  <div ref="scroll-div" />
   <section class="my-8 space-y-8">
     <Container
       v-if="isPending"
@@ -75,12 +81,11 @@ watch(
     >
       <News v-for="news in allNews" :key="news.url" :news="news" />
     </Container>
-    <CategoryPagination
+    <NewsPagination
       v-if="showPagination"
       :current-page="currentPage"
       :total-pages="totalPages"
       :last-page="lastPage"
-      :category="category"
     />
   </section>
 </template>
